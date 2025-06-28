@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users'); // Example route import
 const testRoutes = require('./routes/test');
 const questionRoutes = require('./routes/question'); // Importing question routes
+const resultRoutes = require('./routes/result'); // Importing result routes
 
 // express app
 const app = express();
@@ -33,5 +34,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes); // Example route usage
 app.use('/api/tests', testRoutes); // Test routes
 app.use('/api/questions', questionRoutes); // Question routes
+app.use('/api/result', resultRoutes); // Result routes
 
 module.exports = app;
