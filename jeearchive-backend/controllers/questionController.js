@@ -60,3 +60,26 @@ exports.bulkUploadQuestions = async (req, res) => {
         
     }
 }
+
+exports.getQuestionsForTest = async (req, res) => {
+    try {
+
+        const {testId} = req.params;
+
+        const questions = await Question.find({test: testId}).select(
+            '-options.isCorrect -correctAnswer'
+        );
+
+        res.status(200).json({
+            message: 'Questions fetched successfully',
+            questions
+        });
+        
+    } catch (err) {
+        console.error('Error fetching questions for test: ', err.message);
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: err.message
+        });
+    }
+}
