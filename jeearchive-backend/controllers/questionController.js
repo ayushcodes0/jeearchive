@@ -32,3 +32,31 @@ exports.createQuestion = async (req, res) => {
         })
     }
 }
+
+exports.bulkUploadQuestions = async (req, res) => {
+    try {
+
+        const questions = req.body.questions; // Expecting an array of question objects
+
+        if(!Array.isArray(questions)){
+            return res.status(400).json({
+                message: 'questions should be an array'
+            });
+        }
+
+        const inserted = await Question.insertMany(questions);
+
+        res.status(201).json({
+            message: `${inserted.length} questions added successfully`,
+            inserted 
+        });
+        
+    } catch (err) {
+        console.error('Error in bulk upload: ', err.message);
+        res.status(500).json({
+            message: 'Internal Server Error During Bulk Upload',
+            error: err.message
+        });
+        
+    }
+}
