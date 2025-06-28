@@ -5,11 +5,11 @@ const protect = require('../middlewares/auth');
 const adminOnly = require('../middlewares/admin');
 const { createQuestion, bulkUploadQuestions, getQuestionsForTest } = require('../controllers/questionController');
 
-// POST /api/questions
+// POST /api/question
 router.post('/', protect, adminOnly, createQuestion);
-// POST /api/questions/bulk
+// POST /api/question/bulk
 router.post('/bulk', protect, adminOnly, bulkUploadQuestions);
-// GET /api/questions/test/:testId
+// GET /api/question/test/:testId
 router.get('/test/:testId', protect, getQuestionsForTest);
 
 

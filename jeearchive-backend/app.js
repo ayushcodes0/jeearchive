@@ -32,8 +32,8 @@ app.get('/', (req, res) => {
 // app.use('/api/auth', authRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes); // Example route usage
-app.use('/api/tests', testRoutes); // Test routes
-app.use('/api/questions', questionRoutes); // Question routes
+app.use('/api/test', testRoutes); // Test routes
+app.use('/api/question', questionRoutes); // Question routes
 app.use('/api/result', resultRoutes); // Result routes
 
 module.exports = app;

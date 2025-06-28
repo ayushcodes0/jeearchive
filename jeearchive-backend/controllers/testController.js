@@ -1,4 +1,5 @@
 const Test = require('../models/Test');
+const Result = require('../models/Result');
 
 exports.createTest = async (req, res) => {
     try {
@@ -45,3 +46,59 @@ exports.getAllTests = async (req, res) =>{
         });
     }
 }
+
+exports.getAvailableTestsForUser = async (req,res) =>{
+    try {
+
+        const userId = req.user.id;
+
+        const attemptedResults = await Result.find({user: userId}).select('test');
+        const attemptedTestIds = await attemptedResults.map((result) => result.test.toString());
+
+        const availableTests = await Test.find({
+            _id: {$nin: attemptedTestIds},
+        }).sort({date: -1});
+
+        res.status(200).json({
+            message: "Fetched successfully all the tests",
+            count: availableTests.length,
+            tests: availableTests
+        });
+        
+    } catch (err) {
+        console.log("Error fetching available tests:", err.message);
+        res.status(500).json({
+            message: "Failed to fetch available tests"
+        })
+    }
+}
+
+exports.getAttemptedTestsForUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get all results by the user, and populate test info
+    const attempted = await Result.find({ user: userId })
+      .populate({
+        path: 'test',
+        select: 'title date shift subject duration',
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+        message: "Successfully fetched attempted test",
+        count: attempted.length,
+        attemptedTests: attempted.map((result) => ({
+        test: result.test,
+        score: result.score,
+        correctAnswers: result.correctAnswers,
+        wrongAnswers: result.wrongAnswers,
+        unattempted: result.unattempted,
+        submittedAt: result.createdAt,
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch attempted tests' });
+  }
+};
