@@ -128,3 +128,71 @@ exports.getResultByTestId = async (req, res) => {
         });
     }
 }
+    exports.getAllResultsForUser = async (req, res) => {
+        try {
+            const userId = req.user.id;
+
+            const results = await Result.find({ user: userId })
+            .populate('test', 'title date shift')
+            .sort({ createdAt: -1 });
+
+            // Aggregate lifetime stats
+            let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
+
+            results.forEach(result => {
+            totalCorrect += result.correctCount;
+            totalWrong += result.wrongCount;
+            totalUnattempted += result.unattemptedCount;
+            totalScore += result.score;
+            });
+
+            const lifetimeStats = {
+            testsGiven: results.length,
+            totalCorrect,
+            totalWrong,
+            totalUnattempted,
+            averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
+            };
+
+            res.status(200).json({ results, lifetimeStats });
+        } catch (err) {
+            console.error('Error fetching user results:', err.message);
+            res.status(500).json({ message: 'Server error' });
+        }
+    };
+
+
+exports.getResultsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const results = await Result.find({ user: userId })
+      .populate('test', 'title date shift')
+      .sort({ createdAt: -1 });
+
+    let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
+
+    results.forEach(result => {
+      totalCorrect += result.correctCount;
+      totalWrong += result.wrongCount;
+      totalUnattempted += result.unattemptedCount;
+      totalScore += result.score;
+    });
+
+    const lifetimeStats = {
+      testsGiven: results.length,
+      totalCorrect,
+      totalWrong,
+      totalUnattempted,
+      averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
+    };
+
+    res.status(200).json({message: "Result fetched successfull according to userId", results, lifetimeStats });
+  } catch (err) {
+    console.error('Error fetching results by userId:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
