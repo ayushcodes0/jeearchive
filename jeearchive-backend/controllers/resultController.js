@@ -95,3 +95,36 @@ exports.submitTest = async (req, res) => {
         }); 
     }
 }
+
+
+exports.getResultByTestId = async (req, res) => {
+    try {
+
+        const {testId} = req.params;
+        const userId = req.user.id;
+
+        const result = await Result.findOne({ user: userId, test: testId})
+        .populate('test', 'title description')
+        .populate({
+            path: 'answers.question',
+            select: 'questionText questionImage options correctAnswer subject type'
+        });
+
+        if(!result){
+            return res.status(404).json({
+                message: 'Result not found for this test'
+            })
+        }
+
+        res.status(200).json({
+            message: 'Result fetched successfully',
+            result
+        })
+        
+    } catch (err) {
+        console.error('Error fetching result by testId:', err.message);
+        res.status(500).json({
+            message: 'Internal server error'
+        });
+    }
+}
