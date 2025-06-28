@@ -41,6 +41,7 @@ exports.register = async (req, res) => {
         // generate token
         const token = generateToken(newUser);
 
+        // return response
         res.status(201).json({
             message: 'User registered successfully',
             token,
@@ -55,6 +56,60 @@ exports.register = async (req, res) => {
     } catch (err) {
         
         console.error('Error registering user:', err.message);
+        res.status(500).json({
+            message: 'Server error. Please try again.',
+            error: err.message
+        });
+    }
+}
+
+
+// ✅ @desc   Login user
+// ✅ @route  POST /api/auth/login
+// ✅ @access Public
+
+exports.login = async (req, res) => {
+    try {
+
+        const {email, password} = req.body;
+
+        // check for user
+        const user = await User.findOne({email});
+        if(!user) {
+            return res.status(400).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // check password
+        const isMatch = await user.matchPassword(password);
+        if(!isMatch) {
+            return res.status(400).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // generate token
+        const token = jwt.sign(
+            {id: user._id, role: user.role},
+            process.env.JWT_SECRET,
+            {expiresIn: '7d'}
+        )
+
+        // return response
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: user._id,
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+                role: user.role,
+            }
+        });
+        
+    } catch (err) {
+        console.error('Login error: ', err.message);
         res.status(500).json({
             message: 'Server error. Please try again.',
             error: err.message
