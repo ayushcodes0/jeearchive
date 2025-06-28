@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users'); // Example route import
 
 // express app
 const app = express();
@@ -27,5 +28,6 @@ app.get('/', (req, res) => {
 // const authRoutes = require('./routes/auth');
 // app.use('/api/auth', authRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes); // Example route usage
 
 module.exports = app;
