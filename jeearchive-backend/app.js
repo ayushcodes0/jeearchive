@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users'); // Example route import
+const testRoutes = require('./routes/test');
 
 // express app
 const app = express();
@@ -29,5 +30,6 @@ app.get('/', (req, res) => {
 // app.use('/api/auth', authRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes); // Example route usage
+app.use('/api/tests', testRoutes); // Test routes
 
 module.exports = app;
