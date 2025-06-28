@@ -3,6 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
+const authRoutes = require('./routes/auth');
+
 // express app
 const app = express();
 
@@ -24,5 +26,6 @@ app.get('/', (req, res) => {
 // Example:
 // const authRoutes = require('./routes/auth');
 // app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 module.exports = app;
