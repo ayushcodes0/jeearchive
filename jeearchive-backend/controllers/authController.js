@@ -116,3 +116,22 @@ exports.login = async (req, res) => {
         });
     }
 }
+
+    exports.getMe = async (req, res) => {
+        try{
+            const user = await User.findById(req.user.id).select('-password');
+            if(!user) return res.status(404).json({
+                message: 'user not found'
+            });
+            res.status(200).json({
+                message: '/me user data fetched successfully',
+                user
+            })
+        }
+        catch(err){
+            console.log("Error fetching /me user data" , err.message);
+            res.status(500).json({
+                message: 'Internal Server Error'
+            });
+        }
+    }
