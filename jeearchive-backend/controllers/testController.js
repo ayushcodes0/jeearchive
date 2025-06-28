@@ -27,3 +27,21 @@ exports.createTest = async (req, res) => {
         
     }
 }
+
+exports.getAllTests = async (req, res) =>{
+    try {
+
+        const tests = await Test.find().sort({createdAt: -1}); // latest tests first
+        res.status(200).json({
+            message: 'Tests fetched successfully',
+            tests
+        });
+        
+    } catch (err) {
+        console.error('Error fetching tests:', err.message);
+        res.status(500).json({
+            message: 'Error fetching tests',
+            error: err.message
+        });
+    }
+}
