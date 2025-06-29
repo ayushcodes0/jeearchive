@@ -195,4 +195,81 @@ exports.getResultsByUserId = async (req, res) => {
 };
 
 
+exports.saveProgress = async (req, res) => {
+  const { testId } = req.params;
+  const userId = req.user.id;
+
+  const { answers } = req.body; 
+
+  try {
+    let result = await Result.findOne({ test: testId, user: userId });
+
+    if (!result) {
+      // create empty result on first save
+      result = new Result({
+        user: userId,
+        test: testId,
+        answers: [],
+        totalMarks: 300
+      });
+    }
+
+    // Update or push answers
+    for (let newAns of answers) {
+      const existing = result.answers.find(a => a.question.toString() === newAns.question);
+
+      if (existing) {
+        existing.selectedOption = newAns.selectedOption;
+        existing.markedForReview = newAns.markedForReview;
+        existing.answeredAndMarkedForReview = newAns.answeredAndMarkedForReview;
+        existing.visited = newAns.visited;
+      } else {
+        result.answers.push(newAns);
+      }
+    }
+
+    await result.save();
+
+    res.status(200).json({ message: 'Progress saved successfully' });
+  } catch (err) {
+    console.error('Error saving progress:', err.message);
+    res.status(500).json({
+        message : 'Error saving progress'    
+    });
+  }
+};
+
+
+
+exports.getTestProgress = async (req, res) => {
+  const { testId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const result = await Result.findOne({ test: testId, user: userId }).populate('answers.question');
+
+    if (!result) {
+      return res.status(404).json({ message: 'No progress found for this test.' });
+    }
+
+    // Only return progress-related data
+    const progressData = result.answers.map((ans) => ({
+      question: ans.question._id,
+      selectedOption: ans.selectedOption,
+      numericalAnswer: ans.numericalAnswer,
+      markedForReview: ans.markedForReview,
+      answeredAndMarkedForReview: ans.answeredAndMarkedForReview,
+      visited: ans.visited,
+    }));
+
+    res.status(200).json({message: "Successfully fetched progress data", testId, userId, progress: progressData });
+  } catch (err) {
+    console.error('Error fetching progress:', err.message);
+    res.status(500).json({ message: 'Error retrieving progress' });
+  }
+};
+
+
+
+
 

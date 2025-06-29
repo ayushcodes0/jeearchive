@@ -14,11 +14,37 @@ const resultSchema = new mongoose.Schema({
   answers: [
   {
     question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
-    selectedOption: String,         
-    numericalAnswer: String,        
-    isCorrect: Boolean,             
-    correctOption: String,          
-    correctNumericalAnswer: String  
+    selectedOption: {
+      type: String,
+      default: null
+    },         
+    numericalAnswer: {
+      type: String,
+      default: null
+    },        
+    isCorrect: {
+      type: Boolean
+    },             
+    correctOption: {
+      type: String,
+      default: null
+    },          
+    correctNumericalAnswer: {
+      type: String,
+      default: null
+    },
+    markedForReview: {
+      type: Boolean,
+      default: false,
+    },
+    answeredAndMarkedForReview: {
+      type: Boolean,
+      default: false,
+    },
+    visited: {
+      type: Boolean,
+      default: false,
+    }, 
   }
 ],
 attemptSummary: {
