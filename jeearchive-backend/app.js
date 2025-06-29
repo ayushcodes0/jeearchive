@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 // const authRoutes = require('./routes/auth');
 // app.use('/api/auth', authRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes); // Example route usage
+app.use('/api/user', userRoutes); // User profile details
 app.use('/api/test', testRoutes); // Test routes
 app.use('/api/question', questionRoutes); // Question routes
 app.use('/api/result', resultRoutes); // Result routes
