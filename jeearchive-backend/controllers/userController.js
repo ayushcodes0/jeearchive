@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Result = require('../models/Result');
 const Test = require('../models/Test');
+const bcrypt = require('bcryptjs');
 
 exports.getUserProfile = async (req, res) => {
   try {
@@ -54,3 +55,39 @@ exports.getUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { firstName, lastName, gender, currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (gender) user.gender = gender;
+
+    // Password update logic
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+      }
+      user.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: 'Profile updated successfully' });
+
+  } catch (err) {
+    console.error('Profile update error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+

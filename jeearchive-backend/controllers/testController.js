@@ -1,5 +1,6 @@
 const Test = require('../models/Test');
 const Result = require('../models/Result');
+const Question = require('../models/Questions');
 
 exports.createTest = async (req, res) => {
     try {
@@ -102,3 +103,67 @@ exports.getAttemptedTestsForUser = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch attempted tests' });
   }
 };
+
+
+exports.getTestInstructions = async (req, res) => {
+  try {
+    const { testId } = req.params;
+
+    const test = await Test.findById(testId);
+
+    if (!test) {
+      return res.status(404).json({ message: 'Test not found' });
+    }
+
+    const { title, duration, totalMarks, instructions, subjectWiseSectionCount, date, shift } = test;
+
+    res.status(200).json({
+      testId,
+      title,
+      duration,
+      totalMarks,
+      instructions,
+      subjectWiseSectionCount,
+      date,
+      shift
+    });
+  } catch (err) {
+    console.error('Error fetching test instructions:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+exports.getTestQuestions = async (req, res) => {
+  try {
+    const { testId } = req.params;
+
+    const test = await Test.findById(testId);
+    if (!test) return res.status(404).json({ message: 'Test not found' });
+
+    const questions = await Question.find({ test: testId }).select('-options.isCorrect -correctAnswer');
+
+    const structured = {
+      Physics: { A: [], B: [] },
+      Chemistry: { A: [], B: [] },
+      Maths: { A: [], B: [] }
+    };
+
+    questions.forEach(q => {
+      if (structured[q.subject]) {
+        structured[q.subject][q.section].push(q);
+      }
+    });
+
+    res.status(200).json({
+        message: "Successfully fetched all test questions",
+        testId,
+        title: test.title,
+        questions: structured
+    });
+  } catch (err) {
+    console.error('Error fetching questions:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
