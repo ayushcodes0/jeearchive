@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/auth');
 const adminOnly = require('../middlewares/auth');
-const {submitTest, getResultByTestId, getAllResultsForUser, getResultsByUserId, saveProgress, getTestProgress} = require('../controllers/resultController');
+const {submitTest, getResultByTestId, getAllResultsForUser, getResultsByUserId, saveProgress, getTestProgress, getDetailedResult} = require('../controllers/resultController');
 
 // POST /api/result/submit
 router.post('/submit', protect, submitTest);
@@ -16,6 +16,8 @@ router.get('/user/:userId', protect, adminOnly, getResultsByUserId)
 router.post('/save-progress/:testId', protect, saveProgress);
 // GET /api/result/progress/:testId
 router.get('/progress/:testId', protect, getTestProgress);
+// GET /api/result/details/:testId
+router.get('/details/:testId', protect, getDetailedResult);
 
 
 module.exports = router;

@@ -2,99 +2,101 @@ const Question = require('../models/Questions');
 const Result = require('../models/Result');
 
 exports.submitTest = async (req, res) => {
-    try {
+  try {
+    const { testId, answers } = req.body;
+    const userId = req.user.id;
 
-        const {testId, answers} = req.body;  // submitted answers
-        const userId = req.user.id;
+    const questions = await Question.find({ test: testId });
 
-        const questions = await Question.find({ test: testId});
+    let score = 0, correct = 0, wrong = 0, unattempted = 0;
 
-        let score = 0;
-        let correct = 0;
-        let wrong = 0;
-        let unattempted = 0;
+    const detailedAnswers = [];
+    const subjectStats = {}; // For attemptSummary
 
-        const detailedAnswers = [];
+    for (const question of questions) {
+      const userAnswer = answers.find(ans => ans.questionId === question._id.toString());
 
-        for (const question of questions){
-            const userAnswer = answers.find(ans => ans.questionId === question._id.toString());
+      const ansObj = {
+        question: question._id,
+        selectedOption: userAnswer?.selectedOption || null,
+        numericalAnswer: userAnswer?.numericalAnswer || null,
+        correctOption: null,
+        correctNumericalAnswer: null,
+        isCorrect: false,
+        markedForReview: userAnswer?.markedForReview || false,
+        answeredAndMarkedForReview: userAnswer?.answeredAndMarkedForReview || false,
+        visited: userAnswer?.visited || false
+      };
 
-            if(!userAnswer){
-                unattempted++;
-                continue;
-            }
+      const subject = question.subject;
+      if (!subjectStats[subject]) {
+        subjectStats[subject] = { correct: 0, wrong: 0, unattempted: 0 };
+      }
 
-            const ansObj = {
-                question: question._id,
-                selectedOption: userAnswer.selectedOption || null,
-                numericalAnswer: userAnswer.numericalAnswer || null,
-                correctOption: null,
-                correctNumericalAnswer: null,
-                isCorrect: false
-            }
+      let isCorrect = false;
 
-            let isCorrect = false;
+      if (question.type === 'mcq') {
+        const correctOpt = question.options.find(opt => opt.isCorrect);
+        ansObj.correctOption = correctOpt?.label;
 
-            if(question.type === 'mcq'){
-                const correctOpt = question.options.find(opt => opt.isCorrect);
-                ansObj.correctOption = correctOpt?.label;
-
-                if(userAnswer.selectedOption === correctOpt?.label){
-                    isCorrect = true;
-                }
-            }
-            else if(question.type === 'numerical'){
-                ansObj.correctNumericalAnswer = question.correctAnswer;
-
-                if(userAnswer.numericalAnswer && userAnswer.numericalAnswer.toString().trim() === question.correctAnswer){
-                    isCorrect = true;
-                }
-            }
-
-            ansObj.isCorrect = isCorrect;
-
-            if(isCorrect){
-                score += question.marks;
-                correct++;
-            }
-            else{
-                if(userAnswer.selectedOption || userAnswer.numericalAnswer){
-                    score -= question.negativeMarks || 0;
-                    wrong++;
-                }
-                else{
-                    unattempted++;
-                }
-            }
-
-            detailedAnswers.push(ansObj);
+        if (userAnswer?.selectedOption === correctOpt?.label) {
+          isCorrect = true;
         }
+      } else if (question.type === 'numerical') {
+        ansObj.correctNumericalAnswer = question.correctAnswer;
 
-        const totalMarks = questions.reduce((acc, q) => acc + q.marks, 0);
+        if (
+          userAnswer?.numericalAnswer &&
+          userAnswer.numericalAnswer.toString().trim() === question.correctAnswer
+        ) {
+          isCorrect = true;
+        }
+      }
 
-        const result = await Result.create({
-            user: userId,
-            test: testId,
-            answers: detailedAnswers,
-            score,
-            totalMarks,
-            correctCount: correct,
-            wrongCount: wrong,
-            unattemptedCount: unattempted
-        });
+      ansObj.isCorrect = isCorrect;
 
-        res.status(201).json({
-            message: 'Test submitted and evaluated',
-            result
-        });
+      if (!userAnswer || (!userAnswer.selectedOption && !userAnswer.numericalAnswer)) {
+        unattempted++;
+        subjectStats[subject].unattempted++;
+      } else if (isCorrect) {
+        score += question.marks;
+        correct++;
+        subjectStats[subject].correct++;
+      } else {
+        score -= question.negativeMarks || 0;
+        wrong++;
+        subjectStats[subject].wrong++;
+      }
 
-    } catch (err) {
-        console.error('Test submission error:', err.message);
-        res.status(500).json({
-            message: 'Internal server error'
-        }); 
+      detailedAnswers.push(ansObj);
     }
-}
+
+    const totalMarks = questions.reduce((acc, q) => acc + q.marks, 0);
+
+    const result = await Result.create({
+      user: userId,
+      test: testId,
+      answers: detailedAnswers,
+      score,
+      totalMarks,
+      correctCount: correct,
+      wrongCount: wrong,
+      unattemptedCount: unattempted,
+      attemptSummary: subjectStats
+    });
+
+    res.status(201).json({
+      message: 'Test submitted and evaluated',
+      result
+    });
+
+  } catch (err) {
+    console.error('Test submission error:', err.message);
+    res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
+};
 
 
 exports.getResultByTestId = async (req, res) => {
@@ -268,6 +270,62 @@ exports.getTestProgress = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving progress' });
   }
 };
+
+
+
+exports.getDetailedResult = async (req, res) => {
+  const { testId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const result = await Result.findOne({ test: testId, user: userId }).populate('answers.question');
+
+    if (!result) {
+      return res.status(404).json({ message: 'No result found for this test.' });
+    }
+
+    const detailedAnswers = result.answers.map(ans => {
+      const q = ans.question;
+
+      return {
+        questionId: q._id,
+        subject: q.subject,
+        questionText: q.text,
+        questionImage: q.imageUrl || null,
+        options: q.options.map(opt => ({
+          label: opt.label,
+          text: opt.text,
+          imageUrl: opt.imageUrl || null
+        })),
+        type: q.type, // numerical or objective
+        selectedOption: ans.selectedOption || null,
+        numericalAnswer: ans.numericalAnswer || null,
+        correctOption: ans.correctOption || null,
+        correctNumericalAnswer: ans.correctNumericalAnswer || null,
+        isCorrect: ans.isCorrect,
+        visited: ans.visited,
+        markedForReview: ans.markedForReview,
+        answeredAndMarkedForReview: ans.answeredAndMarkedForReview
+      };
+    });
+
+    res.status(200).json({
+      testId,
+      userId,
+      score: result.score,
+      correctCount: result.correctCount,
+      wrongCount: result.wrongCount,
+      unattemptedCount: result.unattemptedCount,
+      attemptSummary: result.attemptSummary,
+      questions: detailedAnswers
+    });
+
+  } catch (error) {
+    console.error('Error getting detailed result:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 
 
