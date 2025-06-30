@@ -169,3 +169,48 @@ exports.getTestQuestions = async (req, res) => {
   }
 };
 
+
+exports.editTest = async (req, res) => {
+  try {
+    const { testId } = req.params;
+    const updates = req.body;
+
+    const updatedTest = await Test.findByIdAndUpdate(testId, updates, { new: true });
+
+    if (!updatedTest) {
+      return res.status(404).json({ message: 'Test not found' });
+    }
+
+    res.status(200).json({
+      message: 'Test updated successfully',
+      test: updatedTest
+    });
+  } catch (err) {
+    console.error('Error editing test:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+exports.deleteTest = async (req, res) => {
+  try {
+    const { testId } = req.params;
+
+    const deletedTest = await Test.findByIdAndDelete(testId);
+    if (!deletedTest) {
+      return res.status(404).json({ message: 'Test not found' });
+    }
+
+    // Optionally: Delete associated questions
+    await Question.deleteMany({ test: testId });
+
+    // Optionally: Delete associated results
+    await Result.deleteMany({ test: testId });
+
+    res.status(200).json({ message: 'Test and related data deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting test:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Result = require('../models/Result');
 const Test = require('../models/Test');
 const bcrypt = require('bcryptjs');
+const cloudinary = require('../utils/cloudinary');
 
 exports.getUserProfile = async (req, res) => {
   try {
@@ -79,6 +80,25 @@ exports.updateUserProfile = async (req, res) => {
         return res.status(400).json({ message: 'Current password is incorrect' });
       }
       user.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // Profile image upload (if any)
+    if (req.file) {
+      const streamUpload = (buffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'user-profiles' },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          stream.end(buffer);
+        });
+      };
+
+      const uploadResult = await streamUpload(req.file.buffer);
+      user.profileImage = uploadResult.secure_url;
     }
 
     await user.save();

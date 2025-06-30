@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6
   },
+  profileImage: {
+    type: String,
+    default: null,
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],

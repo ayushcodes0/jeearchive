@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/auth');
 const adminOnly = require('../middlewares/admin');
-const { createTest, getAllTests, getAvailableTestsForUser, getAttemptedTestsForUser, getTestInstructions, getTestQuestions } = require('../controllers/testController');
+const { createTest, getAllTests, getAvailableTestsForUser, getAttemptedTestsForUser, getTestInstructions, getTestQuestions, editTest, deleteTest } = require('../controllers/testController');
 
 // POST /api/test
 router.post('/', protect, adminOnly, createTest);
@@ -16,6 +16,11 @@ router.get('/user/attempted',protect, getAttemptedTestsForUser);
 router.get('/:testId/instructions', protect, getTestInstructions);
 // GET api/test/:testId/questions
 router.get('/:testId/questions', protect, getTestQuestions);
+// PUT api/test
+router.put('/edit/:testId', protect, adminOnly, editTest);
+
+// Delete api/test
+router.delete('/delete/:testId', protect, adminOnly, deleteTest);
 
 
 module.exports = router;
