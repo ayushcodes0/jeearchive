@@ -12,9 +12,9 @@ router.get('/', protect, getAllTests);
 router.get('/user/available', protect, getAvailableTestsForUser);
 // GET /api/test
 router.get('/user/attempted',protect, getAttemptedTestsForUser);
-// GET /:testId/instructions
+// GET api/test/:testId/instructions
 router.get('/:testId/instructions', protect, getTestInstructions);
-// GET /:testId/questions
+// GET api/test/:testId/questions
 router.get('/:testId/questions', protect, getTestQuestions);
 
 

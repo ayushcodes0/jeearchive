@@ -5,13 +5,15 @@ const Question = require('../models/Questions');
 exports.createTest = async (req, res) => {
     try {
 
-        const {title, duration, totalMarks, instructions} = req.body;
+        const {title, duration, totalMarks, instructions, date, shift} = req.body;
 
         const test = await Test.create({
             title,
             duration,
             totalMarks,
             instructions,
+            date,
+            shift,
             createdBy: req.user.id  // from auth middleware
         });
 
