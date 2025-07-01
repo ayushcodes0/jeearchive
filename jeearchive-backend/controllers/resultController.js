@@ -1,5 +1,6 @@
 const Question = require('../models/Questions');
 const Result = require('../models/Result');
+const redisClient = require('../utils/redisClient');
 
 exports.submitTest = async (req, res) => {
   try {
@@ -85,6 +86,23 @@ exports.submitTest = async (req, res) => {
       attemptSummary: subjectStats
     });
 
+    // Comprehensive Cache Invalidation
+    const cacheKeysToDelete = [
+      // User-specific caches
+      `user:${userId}:availableTests`,
+      `user:${userId}:attemptedTests`,
+      `user:${userId}:results`,
+      
+      // Result-specific caches
+      `result:${testId}:${userId}`,
+      `result:${testId}:${userId}:detailed`,
+    ];
+
+    // Execute all cache deletions in parallel
+    await Promise.all(
+      cacheKeysToDelete.map(key => redisClient.del(key).catch(err => console.error(`Cache delete failed for ${key}:`, err))
+    ));
+
     res.status(201).json({
       message: 'Test submitted and evaluated',
       result
@@ -100,78 +118,66 @@ exports.submitTest = async (req, res) => {
 
 
 exports.getResultByTestId = async (req, res) => {
-    try {
-
-        const {testId} = req.params;
-        const userId = req.user.id;
-
-        const result = await Result.findOne({ user: userId, test: testId})
-        .populate('test', 'title description')
-        .populate({
-            path: 'answers.question',
-            select: 'questionText questionImage options correctAnswer subject type'
-        });
-
-        if(!result){
-            return res.status(404).json({
-                message: 'Result not found for this test'
-            })
-        }
-
-        res.status(200).json({
-            message: 'Result fetched successfully',
-            result
-        })
-        
-    } catch (err) {
-        console.error('Error fetching result by testId:', err.message);
-        res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
-    exports.getAllResultsForUser = async (req, res) => {
-        try {
-            const userId = req.user.id;
-
-            const results = await Result.find({ user: userId })
-            .populate('test', 'title date shift')
-            .sort({ createdAt: -1 });
-
-            // Aggregate lifetime stats
-            let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
-
-            results.forEach(result => {
-            totalCorrect += result.correctCount;
-            totalWrong += result.wrongCount;
-            totalUnattempted += result.unattemptedCount;
-            totalScore += result.score;
-            });
-
-            const lifetimeStats = {
-            testsGiven: results.length,
-            totalCorrect,
-            totalWrong,
-            totalUnattempted,
-            averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
-            };
-
-            res.status(200).json({ results, lifetimeStats });
-        } catch (err) {
-            console.error('Error fetching user results:', err.message);
-            res.status(500).json({ message: 'Server error' });
-        }
-    };
-
-
-exports.getResultsByUserId = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { testId } = req.params;
+    const userId = req.user.id;
+    const cacheKey = `result:${testId}:${userId}`;
+
+    // Try cache first
+    const cachedResult = await redisClient.get(cacheKey);
+    if (cachedResult) {
+      return res.status(200).json({
+        message: 'Result fetched successfully (cached)',
+        result: JSON.parse(cachedResult)
+      });
+    }
+
+    const result = await Result.findOne({ user: userId, test: testId })
+      .populate('test', 'title description')
+      .populate({
+        path: 'answers.question',
+        select: 'questionText questionImage options correctAnswer subject type'
+      });
+
+    if (!result) {
+      return res.status(404).json({ message: 'Result not found for this test' });
+    }
+
+    // Cache for 1 hour
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(result));
+
+    res.status(200).json({
+      message: 'Result fetched successfully',
+      result
+    });
+    
+  } catch (err) {
+    console.error('Error fetching result by testId:', err.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getAllResultsForUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const cacheKey = `user:${userId}:results`;
+
+    // Try cache first
+    const cachedResults = await redisClient.get(cacheKey);
+    if (cachedResults) {
+      const parsed = JSON.parse(cachedResults);
+      return res.status(200).json({ 
+        message: 'Results fetched (cached)',
+        results: parsed.results,
+        lifetimeStats: parsed.lifetimeStats
+      });
+    }
 
     const results = await Result.find({ user: userId })
       .populate('test', 'title date shift')
       .sort({ createdAt: -1 });
 
+    // Calculate lifetime stats
     let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
 
     results.forEach(result => {
@@ -189,7 +195,73 @@ exports.getResultsByUserId = async (req, res) => {
       averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
     };
 
-    res.status(200).json({message: "Result fetched successfull according to userId", results, lifetimeStats });
+    // Cache combined data for 1 hour
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify({
+      results,
+      lifetimeStats
+    }));
+
+    res.status(200).json({ 
+      message: 'Results fetched successfully',
+      results,
+      lifetimeStats 
+    });
+  } catch (err) {
+    console.error('Error fetching user results:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+exports.getResultsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const cacheKey = `user:${userId}:results`;
+
+    // Try cache first
+    const cachedResults = await redisClient.get(cacheKey);
+    if (cachedResults) {
+      const parsed = JSON.parse(cachedResults);
+      return res.status(200).json({
+        message: "Results fetched successfully (cached)",
+        results: parsed.results,
+        lifetimeStats: parsed.lifetimeStats
+      });
+    }
+
+    const results = await Result.find({ user: userId })
+      .populate('test', 'title date shift')
+      .sort({ createdAt: -1 });
+
+    // Calculate lifetime stats
+    let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
+
+    results.forEach(result => {
+      totalCorrect += result.correctCount;
+      totalWrong += result.wrongCount;
+      totalUnattempted += result.unattemptedCount;
+      totalScore += result.score;
+    });
+
+    const lifetimeStats = {
+      testsGiven: results.length,
+      totalCorrect,
+      totalWrong,
+      totalUnattempted,
+      averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
+    };
+
+    // Cache combined data for 1 hour
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify({
+      results,
+      lifetimeStats
+    }));
+
+    res.status(200).json({
+      message: "Results fetched successfully",
+      results,
+      lifetimeStats
+    });
   } catch (err) {
     console.error('Error fetching results by userId:', err.message);
     res.status(500).json({ message: 'Server error' });
@@ -200,14 +272,12 @@ exports.getResultsByUserId = async (req, res) => {
 exports.saveProgress = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;
-
-  const { answers } = req.body; 
+  const { answers } = req.body;
 
   try {
     let result = await Result.findOne({ test: testId, user: userId });
 
     if (!result) {
-      // create empty result on first save
       result = new Result({
         user: userId,
         test: testId,
@@ -216,27 +286,70 @@ exports.saveProgress = async (req, res) => {
       });
     }
 
-    // Update or push answers
+    // Track if we're making actual changes
+    let changesMade = false;
+
     for (let newAns of answers) {
-      const existing = result.answers.find(a => a.question.toString() === newAns.question);
+      const existing = result.answers.find(a => 
+        a.question.toString() === newAns.question
+      );
 
       if (existing) {
-        existing.selectedOption = newAns.selectedOption;
-        existing.markedForReview = newAns.markedForReview;
-        existing.answeredAndMarkedForReview = newAns.answeredAndMarkedForReview;
-        existing.visited = newAns.visited;
+        // Only update if values actually changed
+        if (existing.selectedOption !== newAns.selectedOption ||
+            existing.markedForReview !== newAns.markedForReview ||
+            existing.answeredAndMarkedForReview !== newAns.answeredAndMarkedForReview ||
+            existing.visited !== newAns.visited) {
+          existing.selectedOption = newAns.selectedOption;
+          existing.markedForReview = newAns.markedForReview;
+          existing.answeredAndMarkedForReview = newAns.answeredAndMarkedForReview;
+          existing.visited = newAns.visited;
+          changesMade = true;
+        }
       } else {
         result.answers.push(newAns);
+        changesMade = true;
       }
+    }
+
+    if (!changesMade) {
+      return res.status(200).json({ message: 'No changes detected' });
     }
 
     await result.save();
 
-    res.status(200).json({ message: 'Progress saved successfully' });
+    // Cache invalidation for affected keys
+    const cacheKeysToDelete = [
+      // User-specific caches
+      `user:${userId}:availableTests`,
+      `user:${userId}:attemptedTests`,
+      `user:${userId}:results`,
+      
+      // Result-specific caches
+      `result:${testId}:${userId}`,
+      `result:${testId}:${userId}:detailed`,
+
+      `user:${userId}:test:${testId}:progress`,  // Progress cache
+
+    ];
+
+    await Promise.all(
+      cacheKeysToDelete.map(key => 
+        redisClient.del(key).catch(err => 
+          console.error(`Failed to delete cache key ${key}:`, err)
+        )
+    ));
+
+    res.status(200).json({ 
+      message: 'Progress saved successfully',
+      updatedAt: new Date() 
+    });
+
   } catch (err) {
     console.error('Error saving progress:', err.message);
     res.status(500).json({
-        message : 'Error saving progress'    
+      message: 'Error saving progress',
+      error: err.message    
     });
   }
 };
@@ -246,15 +359,26 @@ exports.saveProgress = async (req, res) => {
 exports.getTestProgress = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;
+  const cacheKey = `user:${userId}:test:${testId}:progress`;
 
   try {
-    const result = await Result.findOne({ test: testId, user: userId }).populate('answers.question');
-
-    if (!result) {
-      return res.status(404).json({ message: 'No progress found for this test.' });
+    // Try cache first
+    const cachedProgress = await redisClient.get(cacheKey);
+    if (cachedProgress) {
+      return res.status(200).json({ 
+        message: 'Progress retrieved (cached)',
+        progress: JSON.parse(cachedProgress),
+        cached: true
+      });
     }
 
-    // Only return progress-related data
+    const result = await Result.findOne({ test: testId, user: userId })
+      .populate('answers.question');
+
+    if (!result) {
+      return res.status(404).json({ message: 'No progress found' });
+    }
+
     const progressData = result.answers.map((ans) => ({
       question: ans.question._id,
       selectedOption: ans.selectedOption,
@@ -264,7 +388,15 @@ exports.getTestProgress = async (req, res) => {
       visited: ans.visited,
     }));
 
-    res.status(200).json({message: "Successfully fetched progress data", testId, userId, progress: progressData });
+    // Cache for 30 minutes (shorter TTL than results since progress changes frequently)
+    await redisClient.setEx(cacheKey, 1800, JSON.stringify(progressData));
+
+    res.status(200).json({ 
+      message: 'Progress retrieved',
+      progress: progressData,
+      cached: false
+    });
+
   } catch (err) {
     console.error('Error fetching progress:', err.message);
     res.status(500).json({ message: 'Error retrieving progress' });
@@ -276,9 +408,20 @@ exports.getTestProgress = async (req, res) => {
 exports.getDetailedResult = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;
+  const cacheKey = `result:${testId}:${userId}:detailed`;
 
   try {
-    const result = await Result.findOne({ test: testId, user: userId }).populate('answers.question');
+    // Try cache first
+    const cachedResult = await redisClient.get(cacheKey);
+    if (cachedResult) {
+      return res.status(200).json({
+        message: 'Detailed result fetched successfully (cached)',
+        ...JSON.parse(cachedResult)
+      });
+    }
+
+    const result = await Result.findOne({ test: testId, user: userId })
+      .populate('answers.question');
 
     if (!result) {
       return res.status(404).json({ message: 'No result found for this test.' });
@@ -297,7 +440,7 @@ exports.getDetailedResult = async (req, res) => {
           text: opt.text,
           imageUrl: opt.imageUrl || null
         })),
-        type: q.type, // numerical or objective
+        type: q.type,
         selectedOption: ans.selectedOption || null,
         numericalAnswer: ans.numericalAnswer || null,
         correctOption: ans.correctOption || null,
@@ -309,7 +452,7 @@ exports.getDetailedResult = async (req, res) => {
       };
     });
 
-    res.status(200).json({
+    const responseData = {
       testId,
       userId,
       score: result.score,
@@ -318,6 +461,14 @@ exports.getDetailedResult = async (req, res) => {
       unattemptedCount: result.unattemptedCount,
       attemptSummary: result.attemptSummary,
       questions: detailedAnswers
+    };
+
+    // Cache for 1 hour
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(responseData));
+
+    res.status(200).json({
+      message: 'Detailed result fetched successfully',
+      ...responseData
     });
 
   } catch (error) {
@@ -325,7 +476,6 @@ exports.getDetailedResult = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 
 

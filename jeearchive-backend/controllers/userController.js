@@ -3,13 +3,23 @@ const Result = require('../models/Result');
 const Test = require('../models/Test');
 const bcrypt = require('bcryptjs');
 const cloudinary = require('../utils/cloudinary');
+const redisClient = require('../utils/redisClient');
 
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
+    const cacheKey = `user:${userId}:profile`;
+
+    // Try cache first
+    const cachedProfile = await redisClient.get(cacheKey);
+    if (cachedProfile) {
+      return res.status(200).json({
+        message: "User profile data fetched successfully (cached)",
+        ...JSON.parse(cachedProfile)
+      });
+    }
 
     const user = await User.findById(userId).select('-password');
-
     const results = await Result.find({ user: userId })
       .populate('test', 'title date')
       .sort({ createdAt: -1 });
@@ -17,24 +27,23 @@ exports.getUserProfile = async (req, res) => {
     let totalCorrect = 0, totalWrong = 0, totalUnattempted = 0, totalScore = 0;
 
     const recentResults = results
-  .filter(result => result.test)  // ensure test is populated
-  .map(result => {
-    totalCorrect += result.correctCount;
-    totalWrong += result.wrongCount;
-    totalUnattempted += result.unattemptedCount;
-    totalScore += result.score;
+      .filter(result => result.test)
+      .map(result => {
+        totalCorrect += result.correctCount;
+        totalWrong += result.wrongCount;
+        totalUnattempted += result.unattemptedCount;
+        totalScore += result.score;
 
-    return {
-      testTitle: result.test.title,
-      date: result.test.date,
-      score: result.score,
-      totalMarks: result.totalMarks,
-      correct: result.correctCount,
-      wrong: result.wrongCount,
-      unattempted: result.unattemptedCount
-    };
-  });
-
+        return {
+          testTitle: result.test.title,
+          date: result.test.date,
+          score: result.score,
+          totalMarks: result.totalMarks,
+          correct: result.correctCount,
+          wrong: result.wrongCount,
+          unattempted: result.unattemptedCount
+        };
+      });
 
     const lifetimeStats = {
       testsGiven: results.length,
@@ -44,11 +53,18 @@ exports.getUserProfile = async (req, res) => {
       averageScore: results.length > 0 ? (totalScore / results.length).toFixed(2) : 0
     };
 
+    const profileData = {
+      user,
+      lifetimeStats,
+      recentResults
+    };
+
+    // Cache for 30 minutes (shorter TTL than test data since profile changes more frequently)
+    await redisClient.setEx(cacheKey, 1800, JSON.stringify(profileData));
+
     res.status(200).json({
-        message: "User profile data fetched successfully",
-        user,
-        lifetimeStats,
-        recentResults
+      message: "User profile data fetched successfully",
+      ...profileData
     });
 
   } catch (err) {
@@ -57,32 +73,42 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-
-
 exports.updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-
     const { firstName, lastName, gender, currentPassword, newPassword } = req.body;
 
     const user = await User.findById(userId);
-
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (gender) user.gender = gender;
+    // Track changes for cache invalidation
+    let profileChanged = false;
+    let passwordChanged = false;
 
-    // Password update logic
+    if (firstName && user.firstName !== firstName) {
+      user.firstName = firstName;
+      profileChanged = true;
+    }
+    if (lastName && user.lastName !== lastName) {
+      user.lastName = lastName;
+      profileChanged = true;
+    }
+    if (gender && user.gender !== gender) {
+      user.gender = gender;
+      profileChanged = true;
+    }
+
+    // Password update
     if (currentPassword && newPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch) {
         return res.status(400).json({ message: 'Current password is incorrect' });
       }
       user.password = await bcrypt.hash(newPassword, 10);
+      passwordChanged = true;
     }
 
-    // Profile image upload (if any)
+    // Profile image upload
     if (req.file) {
       const streamUpload = (buffer) => {
         return new Promise((resolve, reject) => {
@@ -98,16 +124,40 @@ exports.updateUserProfile = async (req, res) => {
       };
 
       const uploadResult = await streamUpload(req.file.buffer);
-      user.profileImage = uploadResult.secure_url;
+      if (user.profileImage !== uploadResult.secure_url) {
+        user.profileImage = uploadResult.secure_url;
+        profileChanged = true;
+      }
     }
 
-    await user.save();
+    // Only save and invalidate cache if changes were made
+    if (profileChanged || passwordChanged) {
+      await user.save();
 
-    res.status(200).json({ message: 'Profile updated successfully' });
+      // Invalidate all relevant caches
+      const cacheKeysToDelete = [
+        `user:${userId}:profile`,           // Main profile cache
+        `user:${userId}:stats`,            // Stats cache
+        `user:${userId}:activity`,         // Activity feed
+        `user:${userId}:results`           // Results cache
+      ];
+
+      await Promise.all(
+        cacheKeysToDelete.map(key => 
+          redisClient.del(key).catch(err => 
+            console.error(`Cache deletion failed for ${key}:`, err)
+          )
+        )
+      );
+    }
+
+    res.status(200).json({ 
+      message: 'Profile updated successfully',
+      updated: profileChanged || passwordChanged
+    });
 
   } catch (err) {
     console.error('Profile update error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
