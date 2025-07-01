@@ -8,6 +8,7 @@ const userRoutes = require('./routes/users'); // Example route import
 const testRoutes = require('./routes/test');
 const questionRoutes = require('./routes/question'); // Importing question routes
 const resultRoutes = require('./routes/result'); // Importing result routes
+const rateLimiter = require('./middlewares/rateLimiter');
 
 // express app
 const app = express();
@@ -17,6 +18,8 @@ app.use(express.json());
 app.use(cors());  
 app.use(helmet());
 app.use(morgan('dev')); 
+
+app.use(rateLimiter);
 
 // checking route
 app.get('/', (req, res) => {
