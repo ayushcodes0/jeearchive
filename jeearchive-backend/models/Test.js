@@ -55,4 +55,34 @@ const testSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+
+// combined text search index
+testSchema.index(
+  { title: 'text', instructions: 'text' },
+  { weights: { title: 10, instructions: 3 }, name: 'test_search_index' }
+);
+
+// date indexes
+testSchema.index({ date: 1 }, { name: 'date_asc_index' });
+testSchema.index({ date: -1 }, { name: 'date_desc_index' });
+
+// creator index
+testSchema.index({ createdBy: 1, date: -1 }, { name: 'creator_date_index' });
+
+// shift indexes
+testSchema.index(
+  { date: -1, shift: 1 }, 
+  { name: 'date_shift_desc_index' }
+);
+
+// partial index for future tests
+testSchema.index(
+  { date: 1 },
+  { 
+    partialFilterExpression: { date: { $gte: new Date() } },
+    name: 'future_tests_index'
+  }
+);
+
+
 module.exports = mongoose.model('Test', testSchema);

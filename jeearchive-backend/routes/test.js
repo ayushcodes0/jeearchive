@@ -10,7 +10,7 @@ const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/auth');
 const adminOnly = require('../middlewares/admin');
-const { createTest, getAllTests, getAvailableTestsForUser, getAttemptedTestsForUser, getTestInstructions, getTestQuestions, editTest, deleteTest } = require('../controllers/testController');
+const { createTest, getAllTests, getAvailableTestsForUser, getAttemptedTestsForUser, getTestInstructions, getTestQuestions, editTest, deleteTest, searchTests } = require('../controllers/testController');
 
 // POST /api/test/
 router.post('/', protect, adminOnly, createTest);
@@ -28,6 +28,8 @@ router.get('/:testId/questions', protect, getTestQuestions);
 router.put('/edit/:testId', protect, adminOnly, editTest);
 // DELETE api/test/delete/:testId
 router.delete('/delete/:testId', protect, adminOnly, deleteTest);
+// GET /api/test/search?q=jee%20mains
+router.get('/search',protect, searchTests);
 
 
 module.exports = router;

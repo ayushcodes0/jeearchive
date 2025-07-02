@@ -379,3 +379,99 @@ exports.deleteTest = async (req, res) => {
   }
 };
 
+// this is my search controller used to search different tests
+exports.searchTests = async (req, res) => {
+  try {
+    const { q, page = 1, limit = 10 } = req.query;
+    if (!q) return res.status(400).json({ message: 'Query is required' });
+
+    const skip = (page - 1) * limit;
+    const cacheKey = `search:${q}:${page}:${limit}`;
+
+    // Try cache first
+    const cachedResults = await redisClient.get(cacheKey);
+    if (cachedResults) {
+      return res.status(200).json(JSON.parse(cachedResults));
+    }
+
+    const query = q.toLowerCase().trim();
+    const filters = {};
+
+    // Build $or conditions for flexible search
+    const searchConditions = [
+      { title: { $regex: query, $options: 'i' } },
+      { instructions: { $regex: query, $options: 'i' } }
+    ];
+
+    // Special handling for exact matches in quotes
+    if (query.startsWith('"') && query.endsWith('"')) {
+      const exactPhrase = query.slice(1, -1);
+      filters.$or = [
+        { title: exactPhrase },
+        { instructions: exactPhrase }
+      ];
+    } else {
+      // Use text search for multi-word queries
+      if (query.split(' ').length >= 2) {
+        filters.$text = { $search: query };
+      } else {
+        filters.$or = searchConditions;
+      }
+    }
+
+    // Shift detection
+    if (query.includes('shift 1')) filters.shift = 'Shift 1';
+    else if (query.includes('shift 2')) filters.shift = 'Shift 2';
+
+    // Date parsing (more robust version)
+    const dateMatch = query.match(/(\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\s+(\d{1,2})(?:,?\s*)?(\d{4})?)/i);
+    if (dateMatch) {
+      const months = {
+        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+      };
+      const [, monthStr, day, year] = dateMatch;
+      const month = months[monthStr.toLowerCase().substring(0, 3)];
+      const dateYear = year ? parseInt(year) : new Date().getFullYear();
+      
+      const dateStart = new Date(dateYear, month, parseInt(day));
+      const dateEnd = new Date(dateStart);
+      dateEnd.setDate(dateStart.getDate() + 1);
+      
+      filters.date = { $gte: dateStart, $lt: dateEnd };
+    }
+
+    // Execute query with pagination
+    const [tests, totalCount] = await Promise.all([
+      Test.find(filters)
+        .sort(filters.$text ? { score: { $meta: 'textScore' } } : { date: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean(),
+      Test.countDocuments(filters)
+    ]);
+
+    // Prepare response
+    const response = {
+      message: 'Search results fetched successfully',
+      count: tests.length,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: parseInt(page),
+      tests
+    };
+
+    // Cache results for 15 minutes
+    await redisClient.setEx(cacheKey, 900, JSON.stringify(response));
+
+    res.status(200).json(response);
+
+  } catch (err) {
+    console.error('Search error:', err.message);
+    res.status(500).json({ 
+      message: 'Server error',
+      error: err.message 
+    });
+  }
+};
+
