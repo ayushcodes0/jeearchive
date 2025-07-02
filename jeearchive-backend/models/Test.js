@@ -1,4 +1,11 @@
+/* 
 
+  This is my test model page.
+  This page contains the test schema.
+
+*/
+
+// importing mongoose
 const mongoose = require('mongoose');
 
 const testSchema = new mongoose.Schema({

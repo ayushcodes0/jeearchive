@@ -1,3 +1,11 @@
+/* 
+
+  This is my question model page.
+  This page contains the question schema.
+
+*/
+
+// importing mongoose
 const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
@@ -26,14 +34,14 @@ const questionSchema = new mongoose.Schema({
     required: true
   },
   imageUrl: {
-    type: String, // store a link to Cloudinary/AWS S3 etc.
+    type: String, // will store the image on cloudinary and the link to that here.
     default: null
   },
   options: [
     {
       label: { type: String, required: true },       // A, B, C, D
       text: { type: String, default: null },
-      optionImage: { type: String, default: null },  // image inside option
+      optionImage: { type: String, default: null },  // similar to imageUrl 
       isCorrect: { type: Boolean, required: true }
     }
   ],

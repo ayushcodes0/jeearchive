@@ -1,6 +1,18 @@
+/* 
+
+  This is my question controller.
+  This page contains the controller related to questions.
+  Such as : createQuestion, bulkUploadQuestions, getQuestionsForTest, 
+
+*/
+
+// importing Question model
 const Question = require('../models/Questions');
+// importing redisClient for caching the data
 const redisClient = require('../utils/redisClient');
 
+
+// this is createQuestion function use to create a particular question
 exports.createQuestion = async (req, res) => {
     try {
         const { test, subject, section, questionText, imageUrl, options, correctAnswer, type, marks, negativeMarks } = req.body;
@@ -18,10 +30,10 @@ exports.createQuestion = async (req, res) => {
             negativeMarks
         });
 
-        // Invalidate relevant caches
+        // Invalidate the relevant caches
         const cacheKeysToDelete = [
-            `test:${test}:questions`,            // Test questions cache
-            `test:${test}:questionCount`,       // Question count cache if exists
+            `test:${test}:questions`,           // test questions cache
+            `test:${test}:questionCount`,       // question count cache if exists
         ];
 
         await Promise.all(cacheKeysToDelete.map(key => redisClient.del(key)));
@@ -40,6 +52,8 @@ exports.createQuestion = async (req, res) => {
     }
 };
 
+
+// this is bulkUploadQuestions function use to upload questions in bulk, it is very usefull because it provides us freedom to upload the complete test question in one go.
 exports.bulkUploadQuestions = async (req, res) => {
     try {
         const questions = req.body.questions;
@@ -77,6 +91,8 @@ exports.bulkUploadQuestions = async (req, res) => {
     }
 };
 
+
+// this is getQuestionsForTest function use to get all the questions which belongs to same test
 exports.getQuestionsForTest = async (req, res) => {
     try {
         const { testId } = req.params;

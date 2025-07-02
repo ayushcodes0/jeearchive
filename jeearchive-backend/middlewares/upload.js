@@ -1,9 +1,16 @@
+/* 
+
+  This is the upload.js page use to upload file using multer.
+
+*/
+
+// importing multer
 const multer = require('multer')
 
-// Use in-memory storage for direct Cloudinary upload
+// use in-memory storage for direct Cloudinary upload
 const storage = multer.memoryStorage();
 
-// Optional: File type filter (accept only images)
+// it accepts only images
 const fileFilter = (req, file, cb) => {
   if (
     file.mimetype.startsWith('image/')

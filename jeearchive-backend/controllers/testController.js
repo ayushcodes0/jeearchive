@@ -1,8 +1,19 @@
+/* 
+
+  This is my test controller.
+  This page contains the controller for test.
+  Such as : createTest, getAllTests, getAvailableTestsForUser, getAttemptedTestsForUser, getTestInstructions, getTestQuestions, editTest, deleteTest, 
+
+*/
+
+// importing Test model, Result model, Question model, redisClient
 const Test = require('../models/Test');
 const Result = require('../models/Result');
 const Question = require('../models/Questions');
 const redisClient = require('../utils/redisClient');
 
+
+// this is createTest function used to create a test.
 exports.createTest = async (req, res) => {
   try {
     const { title, duration, totalMarks, instructions, date, shift } = req.body;
@@ -35,6 +46,7 @@ exports.createTest = async (req, res) => {
 };
 
 
+// this is getAllTests function use to get all the test present in the database.
 exports.getAllTests = async (req, res) => {
   try {
     const cacheKey = 'tests:all';
@@ -68,6 +80,8 @@ exports.getAllTests = async (req, res) => {
   }
 };
 
+
+// this is getAvailableTestsForUser function used to get all the available test for a particular user
 exports.getAvailableTestsForUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -111,6 +125,8 @@ exports.getAvailableTestsForUser = async (req, res) => {
   }
 };
 
+
+// this is getAttemptedTestsForUser function used to get all the attempted test by the user
 exports.getAttemptedTestsForUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -160,6 +176,7 @@ exports.getAttemptedTestsForUser = async (req, res) => {
 };
 
 
+// this is getTestInstructions function used to get the instruction of a particular test
 exports.getTestInstructions = async (req, res) => {
   try {
     const { testId } = req.params;
@@ -206,7 +223,7 @@ exports.getTestInstructions = async (req, res) => {
 };
 
 
-
+// this is getTestQuestions function used to get the question of a particular test
 exports.getTestQuestions = async (req, res) => {
   try {
     const { testId } = req.params;
@@ -255,6 +272,7 @@ exports.getTestQuestions = async (req, res) => {
 };
 
 
+// this is editTest function used to edit the test
 exports.editTest = async (req, res) => {
   try {
     const { testId } = req.params;
@@ -299,6 +317,7 @@ exports.editTest = async (req, res) => {
 };
 
 
+// this is deleteTest function used to delete a test
 exports.deleteTest = async (req, res) => {
   try {
     const { testId } = req.params;

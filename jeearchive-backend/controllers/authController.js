@@ -1,7 +1,18 @@
+/* 
+
+  This is my auth controller.
+  This page contains the controllers related to auth.
+  Such as : register, login, getMe.
+  Also a generateToken function.
+
+*/
+
+// importing User model
 const User = require('../models/User');
+// importing jsonwebtoken
 const jwt = require('jsonwebtoken');
 
-// generate JWT token
+// this function used to generate the jsonwebtoken which has the expiration of 7 days
 const generateToken = (user) => {
     return jwt.sign(
         { id: user._id, role: user.role },
@@ -10,11 +21,8 @@ const generateToken = (user) => {
     )
 }
 
-// @desc   Register user
-// @route  POST /api/auth/register
-// @access Public
 
-
+// this is register function used to register user and provide them a token to get remembered.
 exports.register = async (req, res) => {
     try {
         
@@ -64,10 +72,7 @@ exports.register = async (req, res) => {
 }
 
 
-// ✅ @desc   Login user
-// ✅ @route  POST /api/auth/login
-// ✅ @access Public
-
+// this is login function used to login user using the token they got earlier
 exports.login = async (req, res) => {
     try {
 
@@ -117,21 +122,23 @@ exports.login = async (req, res) => {
     }
 }
 
-    exports.getMe = async (req, res) => {
-        try{
-            const user = await User.findById(req.user.id).select('-password');
-            if(!user) return res.status(404).json({
-                message: 'user not found'
-            });
-            res.status(200).json({
-                message: '/me user data fetched successfully',
-                user
-            })
-        }
-        catch(err){
-            console.log("Error fetching /me user data" , err.message);
-            res.status(500).json({
-                message: 'Internal Server Error'
-            });
-        }
+
+// this is getMe function used to find the information of the user itself
+exports.getMe = async (req, res) => {
+    try{
+        const user = await User.findById(req.user.id).select('-password');
+        if(!user) return res.status(404).json({
+            message: 'user not found'
+        });
+        res.status(200).json({
+            message: '/me user data fetched successfully',
+            user
+        })
     }
+    catch(err){
+        console.log("Error fetching /me user data" , err.message);
+        res.status(500).json({
+            message: 'Internal Server Error'
+        });
+    }
+}

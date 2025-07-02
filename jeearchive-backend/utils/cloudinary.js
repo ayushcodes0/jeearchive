@@ -1,6 +1,14 @@
-// utils/cloudinary.js
+/* 
+
+    This is cloudinary.js file inside utils folder.
+    It is use to store the images on cloudinary
+
+*/
+
+// importing cloudinary, dotenv
 const cloudinary = require('cloudinary').v2;
 const dotenv = require('dotenv');
+
 dotenv.config();
 
 cloudinary.config({

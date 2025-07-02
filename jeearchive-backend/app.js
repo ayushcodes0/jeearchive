@@ -1,14 +1,23 @@
+
+/* 
+
+  This is my app.js page
+  This file is the main entry point to my backend application.
+  It is responsible for initializing the express server and setting up essential middlewares.
+
+*/
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users'); // Example route import
-const testRoutes = require('./routes/test');
-const questionRoutes = require('./routes/question'); // Importing question routes
-const resultRoutes = require('./routes/result'); // Importing result routes
-const rateLimiter = require('./middlewares/rateLimiter');
+const authRoutes = require('./routes/auth');  // auth routes 
+const userRoutes = require('./routes/users');  // user routes
+const testRoutes = require('./routes/test'); // test routes
+const questionRoutes = require('./routes/question'); // question routes
+const resultRoutes = require('./routes/result'); // result routes
+const rateLimiter = require('./middlewares/rateLimiter'); // rate limiter
 
 // express app
 const app = express();
@@ -21,7 +30,7 @@ app.use(morgan('dev'));
 
 app.use(rateLimiter);
 
-// checking route
+// Example route to check app working
 app.get('/', (req, res) => {
   res.status(200).json({
     message: 'My Jee Archive is running',
@@ -29,14 +38,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// TODO: Add your route imports and mounting here
-// Example:
-// const authRoutes = require('./routes/auth');
-// app.use('/api/auth', authRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes); // User profile details
-app.use('/api/test', testRoutes); // Test routes
-app.use('/api/question', questionRoutes); // Question routes
-app.use('/api/result', resultRoutes); // Result routes
+// Using all the routes here
+app.use('/api/auth', authRoutes); // using auth routes
+app.use('/api/user', userRoutes); // using user routes
+app.use('/api/test', testRoutes); // using test routes
+app.use('/api/question', questionRoutes); // using question routes
+app.use('/api/result', resultRoutes); // using result routes
 
 module.exports = app;

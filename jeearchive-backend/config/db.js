@@ -1,3 +1,10 @@
+/* 
+
+  This is my db.js page.
+  This page contains the function to connect database.
+
+*/
+
 const mongoose = require('mongoose');
 
 const connectDB = async () => {

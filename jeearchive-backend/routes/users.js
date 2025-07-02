@@ -1,4 +1,11 @@
+/* 
 
+  This is user.js inside routes.
+  It contains all the routes related to user
+
+*/
+
+// importing express, express router, protect function, {getUserProfile, updateUserProfile} functions, upload middleware.
 const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/auth');

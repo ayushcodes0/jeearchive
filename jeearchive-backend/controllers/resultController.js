@@ -1,7 +1,18 @@
+/* 
+
+  This is my result controller.
+  This page contains the controller related to result.
+  Such as : submitTest, getResultByTestId, getAllResultsForUser, getResultsByUserId, saveProgress, getTestProgress, getDetailedResult
+
+*/
+
+// importing Questions model, Result model, redisClient(for caching).
 const Question = require('../models/Questions');
 const Result = require('../models/Result');
 const redisClient = require('../utils/redisClient');
 
+
+// this is submitTest function used to make result when user submits the test
 exports.submitTest = async (req, res) => {
   try {
     const { testId, answers } = req.body;
@@ -117,6 +128,7 @@ exports.submitTest = async (req, res) => {
 };
 
 
+// this is getResultByTestId function used to get the result for a particular test
 exports.getResultByTestId = async (req, res) => {
   try {
     const { testId } = req.params;
@@ -157,6 +169,8 @@ exports.getResultByTestId = async (req, res) => {
   }
 };
 
+
+// this is getAllResultsForUser function used to get the result for a particular user
 exports.getAllResultsForUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -213,6 +227,7 @@ exports.getAllResultsForUser = async (req, res) => {
 };
 
 
+// this is getResultsByUserId function used to get the result for a particular userId admin Only
 exports.getResultsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -269,6 +284,7 @@ exports.getResultsByUserId = async (req, res) => {
 };
 
 
+// this is saveProgress function used to save the progress of a user in between the test if the user want to pause the test
 exports.saveProgress = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;
@@ -355,7 +371,7 @@ exports.saveProgress = async (req, res) => {
 };
 
 
-
+// this is getTestProgress function used to get the test progress where user have left the test
 exports.getTestProgress = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;
@@ -404,7 +420,7 @@ exports.getTestProgress = async (req, res) => {
 };
 
 
-
+// this is getDetailedResult function used to get the detailed result so that user can review his complete test performance
 exports.getDetailedResult = async (req, res) => {
   const { testId } = req.params;
   const userId = req.user.id;

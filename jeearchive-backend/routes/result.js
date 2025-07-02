@@ -1,3 +1,11 @@
+/* 
+
+    This is result.js inside routes.
+    It contains all the routes related to result.
+
+*/
+
+// importing express, express router, protect function, adminOnly function, {submitTest, getResultByTestId, getAllResultsForUser, getResultsByUserId, saveProgress, getTestProgress, getDetailedResult} functions.
 const express = require('express');
 const router = express.Router();
 const protect = require('../middlewares/auth');

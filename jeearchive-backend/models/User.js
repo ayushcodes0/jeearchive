@@ -1,4 +1,13 @@
+/* 
+
+  This is my user model page.
+  This page contains the user schema.
+
+*/
+
+// importing mongoose
 const mongoose = require('mongoose');
+// importing bcrypt to hide the password
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -28,7 +37,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6
   },
-  profileImage: {
+  profileImage: {   // storing profileImage on cloudinary and the link to that image here
     type: String,
     default: null,
   },

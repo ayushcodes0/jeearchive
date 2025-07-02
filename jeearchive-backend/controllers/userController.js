@@ -1,3 +1,12 @@
+/* 
+
+  This is my user controller.
+  This page contains the controller for user.
+  Such as : getUserProfile, updateUserProfile, 
+
+*/
+
+// importing User model, Result model, Test model, bcrypt, cloudinary, redisClient
 const User = require('../models/User');
 const Result = require('../models/Result');
 const Test = require('../models/Test');
@@ -5,6 +14,8 @@ const bcrypt = require('bcryptjs');
 const cloudinary = require('../utils/cloudinary');
 const redisClient = require('../utils/redisClient');
 
+
+// this is getUserProfile function used to get the user profile 
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -73,6 +84,8 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
+
+// this is updateUserProfile function used to update the user profile
 exports.updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;

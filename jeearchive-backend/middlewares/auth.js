@@ -1,5 +1,15 @@
+/* 
+
+  This is my auth.js inside middleware.
+  This page contains the functions(middlewares) related to auth.
+
+*/
+
+// importing jsonwebtoken
 const jwt = require('jsonwebtoken');
 
+
+// this is protect middleware use to check the user is logged in or not
 const protect = (req, res, next) => {
     let token;
 

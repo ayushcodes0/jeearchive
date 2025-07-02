@@ -1,0 +1,5 @@
+/* 
+
+  I have made this page for centralize error handling but currently I am not writing any code inside this but will add in future
+
+*/

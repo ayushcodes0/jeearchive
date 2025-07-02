@@ -1,4 +1,11 @@
+/* 
 
+  This is my result model page.
+  This page contains the result schema.
+
+*/
+
+// importing mongoose
 const mongoose = require('mongoose');
 
 const resultSchema = new mongoose.Schema({
