@@ -3,7 +3,7 @@
   This is my auth controller.
   This page contains the controllers related to auth.
   Such as : register, login, getMe.
-  Also a generateToken function.
+  Also a generateToken function.  
 
 */
 
