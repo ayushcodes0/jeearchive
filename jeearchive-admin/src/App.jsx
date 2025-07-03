@@ -1,10 +1,15 @@
 import React from 'react'
 import AdminRoute from './routes/adminRoute'
 import './font.css'
+import { Toaster } from 'react-hot-toast';
+
 
 const App = () => {
-  return (
+  return (<>
+    <Toaster position="top-right" reverseOrder={false} />
     <AdminRoute/>
+  </>
+    
   )
 }
 

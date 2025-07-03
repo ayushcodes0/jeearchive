@@ -5,6 +5,7 @@ import './Register.css'
 import { FaGoogle } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
+import { toast } from 'react-hot-toast';
 
 
 
@@ -24,7 +25,6 @@ const Register = () => {
     password: ""
   })
 
-  const [error, setError] = useState('');
   const [withEmail, setWithEmail] = useState(false);
   const [signin, setSignin] = useState(false);
 
@@ -45,7 +45,12 @@ const Register = () => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/register', signupData);
-      alert("User Registered Successfully")
+      toast.success("User Registered Successfully",{
+        style: {
+          fontFamily: 'Satoshi',
+          fontWeight: '300'
+        },
+      })
       console.log("Response : ", res.data.token);
 
       if (res.data.token && res.data.user.role === 'admin') {
@@ -54,14 +59,19 @@ const Register = () => {
         navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   }
   const handleSignin = async(e) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/login', signinData);
-      alert("User Login Successfully")
+      toast.success("User Logged In Successfully",{
+        style: {
+          fontFamily: 'Satoshi',
+          fontWeight: '300'
+        },
+      })
       console.log("Response : ", res.data.token);
 
       if (res.data.token && res.data.user.role === 'admin') {
@@ -70,7 +80,7 @@ const Register = () => {
         navigate('/');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   }
 
@@ -106,7 +116,6 @@ const Register = () => {
             (
               <>
                 <h2>Signup with <br /> email address</h2>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <form onSubmit={handleSignup}>
                   <input name="firstName" placeholder="First Name" onChange={handleSignupChange} required />
                   <input name="lastName" placeholder="Last Name" onChange={handleSignupChange} required />
@@ -120,7 +129,6 @@ const Register = () => {
             ):(
               <>
                 <h2>Signin with <br /> email address</h2>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <form onSubmit={handleSignin}>
                   <input name="email" type="email" placeholder="Email" onChange={handleSigninChange} required />
                   <input name="password" type="password" placeholder="Password" onChange={handleSigninChange} required />
