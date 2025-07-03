@@ -1,9 +1,10 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter,Router, Routes, Route } from "react-router-dom";
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import PrivateRoute from './PrivateRoute';
+
 
 
 const AdminRoute = () => {
@@ -12,7 +13,6 @@ const AdminRoute = () => {
         <Routes>
 
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>}/>
-            <Route path='/login' element={<Login/>}/>
             <Route path='/register' element={<Register/>}/>
 
         </Routes>
