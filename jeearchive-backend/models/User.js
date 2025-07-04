@@ -13,30 +13,46 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, 'First name is required'],
+    required: function () {
+      return this.provider === 'local';
+    },
     trim: true
   },
   lastName: {
     type: String,
-    required: [true, 'Last name is required'],
+    required: function () {
+      return this.provider === 'local';
+    },
     trim: true
+  },
+  fullName: {
+    type: String
   },
   gender: {
     type: String,
+    required: function () {
+      return this.provider === 'local';
+    },
     enum: ['male', 'female', 'other'],
-    required: [true, 'Gender is required']
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: function () {
+      return this.provider === 'local';
+    },
     unique: true,
     lowercase: true
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: function () {
+      return this.provider === 'local';
+    },
     minlength: 6
   },
+  provider: { type: String, default: 'local' }, // 'google' | 'local'
+  googleId: String,
+  avatar: String,
   profileImage: {   // storing profileImage on cloudinary and the link to that image here
     type: String,
     default: null,

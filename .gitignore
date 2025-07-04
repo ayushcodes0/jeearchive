@@ -1,0 +1,8 @@
+# Ignore ALL .env files in any subdirectory
+**/.env
+**/.env*
+
+# Ignore common files
+**/node_modules/
+**/.DS_Store
+**/dist/

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import PrivateRoute from './PrivateRoute';
+import AuthSuccess from '../pages/AuthSuccess';
 
 
 const AdminRoute = () => {
@@ -12,6 +13,7 @@ const AdminRoute = () => {
 
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>}/>
             <Route path='/register' element={<Register/>}/>
+            <Route path="/auth/success" element={<AuthSuccess />} />
 
         </Routes>
     </BrowserRouter>

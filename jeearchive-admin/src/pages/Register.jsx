@@ -7,8 +7,7 @@ import { IoMdMail } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
 import { toast } from 'react-hot-toast';
 
-
-
+const GOOGLE_URL = import.meta.env.VITE_API_URL + '/auth/google';
 const Register = () => {
   const [signupData, setSignupData] = useState({
     firstName: "",
@@ -106,7 +105,7 @@ const Register = () => {
             <p className='signup-p'>Bring your personal email, <br /> connect your work later</p>
           </div>
           <div className="signup-options">
-            <button className='with-google'><FaGoogle className='google-icon' /> Continue with Google</button>
+            <button className='with-google' onClick={() => (window.location.href = GOOGLE_URL)}><FaGoogle className='google-icon' /> Continue with Google</button>
             <button className='with-email' onClick={()=>setWithEmail(true)}><IoMdMail className='mail-icon'/>Continue with email</button>
           </div> </>
         ):(
