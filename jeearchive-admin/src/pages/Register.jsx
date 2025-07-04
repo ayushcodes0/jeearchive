@@ -55,7 +55,7 @@ const Register = () => {
       if (res.data.token && res.data.user.role === 'admin') {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('admin_token', res.data.token);
-        navigate('/');
+        navigate('/user');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");
@@ -76,7 +76,7 @@ const Register = () => {
       if (res.data.token && res.data.user.role === 'admin') {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('admin_token', res.data.token);
-        navigate('/');
+        navigate('/user');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Something went wrong");

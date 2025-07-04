@@ -21,7 +21,7 @@ export default function AuthSuccess() {
       // if (!payload.isAdmin) return navigate('/');   // or show 403
 
       localStorage.setItem('admin_token', token);
-      navigate('/');                         // landing page for admins
+      navigate('/user');                         // landing page for admins
     } catch {
       navigate('/register');
     }
