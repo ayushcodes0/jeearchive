@@ -35,7 +35,7 @@ exports.googleCallback = async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();     // name, email, picture, sub
-
+    console.log(payload);
     // Find or create user
     let user = await User.findOne({ email: payload.email });
     if (!user) {

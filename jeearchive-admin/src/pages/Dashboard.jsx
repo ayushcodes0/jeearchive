@@ -6,9 +6,7 @@ import { FaUser } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { BsQuestionSquare } from "react-icons/bs";
 import { NavLink, Outlet } from 'react-router-dom';
-
-
-
+import useAuth from '../hooks/useAuth';
 
 
 const Dashboard = () => {
@@ -21,6 +19,7 @@ const Dashboard = () => {
   };
 
     const linkClass = ({ isActive }) => `menu${isActive ? 'active' : ''}`;
+    const {user} = useAuth()
 
   return (
     <div className='dashboard-body'>
@@ -32,7 +31,7 @@ const Dashboard = () => {
         </div>
         <div className="dashboard-left-bottom">
           <p className="admin-logout" onClick={()=>handleLogout()}><IoIosLogOut className='logout-icon'/></p>
-          <p className="admin-profile"><img src={placeholderProfileImage} alt="" /></p>
+          <p className="admin-profile"><img src={user?.avatar || placeholderProfileImage} alt="" /></p>
         </div>
       </div>
       <div className="dashboard-right">

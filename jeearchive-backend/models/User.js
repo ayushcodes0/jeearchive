@@ -52,7 +52,10 @@ const userSchema = new mongoose.Schema({
   },
   provider: { type: String, default: 'local' }, // 'google' | 'local'
   googleId: String,
-  avatar: String,
+  avatar: {
+    type: String,
+    default: null
+  },
   profileImage: {   // storing profileImage on cloudinary and the link to that image here
     type: String,
     default: null,
