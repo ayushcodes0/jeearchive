@@ -41,6 +41,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 4px 18px;
+    position: relative;
 }
 
 .admin-profile{
@@ -51,6 +52,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .admin-profile img{
@@ -105,4 +107,10 @@
 
 .menu.active{
     border-right: 2px solid #F94F39;
+}
+
+.user-popup{
+    position: absolute;
+    bottom: 48px;
+    left: 203px;
 }
