@@ -6,7 +6,7 @@ import { FaUser } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { BsQuestionSquare } from "react-icons/bs";
 import { NavLink, Outlet } from 'react-router-dom';
-// import { useState } from 'react';
+
 
 
 
@@ -26,7 +26,7 @@ const Dashboard = () => {
     <div className='dashboard-body'>
       <div className="dashboard-left">
         <div className="dashboard-left-top">
-          <NavLink to={'/user'} className={`users menu ${linkClass}`}><FaUser className='user-icon'/> User</NavLink>
+          <NavLink to={'/user'} className={`users menu ${linkClass}`}><FaUser className='user-icon'/>User</NavLink>
           <NavLink to={'/test'} className={`tests menu ${linkClass}`}><FaRegNoteSticky className='test-icon'/>Test</NavLink>
           <NavLink to={'/question'} className={`questions menu ${linkClass}`}><BsQuestionSquare className='question-icon'/>Question</NavLink>
         </div>
