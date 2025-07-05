@@ -27,7 +27,7 @@ const Register = () => {
   });
 
   const [withEmail, setWithEmail] = useState(false);
-  const [signin, setSignin] = useState(false);
+  const [signin, setSignin] = useState(true);
 
   const { refreshUser } = useAuth();
   const navigate = useNavigate();
