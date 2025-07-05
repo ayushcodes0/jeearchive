@@ -16,7 +16,7 @@ const redisClient = require('../utils/redisClient');
 // this is createTest function used to create a test.
 exports.createTest = async (req, res) => {
   try {
-    const { title, duration, totalMarks, instructions, date, shift } = req.body;
+    const { title, duration, totalMarks, instructions, date, shift, type } = req.body;
 
     const test = await Test.create({
       title,
@@ -25,6 +25,7 @@ exports.createTest = async (req, res) => {
       instructions,
       date,
       shift,
+      type,
       createdBy: req.user.id
     });
 

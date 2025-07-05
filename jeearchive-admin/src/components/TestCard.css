@@ -1,28 +1,102 @@
 .test-card{
     /* width: 280px; */
     height: 380px;
-    background-color: #2A293B;
+    background-color: #1415157f;
     border-radius: 40px;
-    --border-bottom-width: 2px;
-    --border-color: rgba(255, 255, 255, 0.02);
-    --border-left-width: 2px;
-    --border-right-width: 2px;
-    --border-style: solid;
-    --border-top-width: 2px;
-    width: 90%;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    width: 100%;
     transform: none;
     opacity: 1;
     border-radius: 40px;
-    padding: 32px;
+    padding: 28px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 50px 30px, rgba(0, 0, 0, 0.06) 0px 12px 24px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transform-origin: center center;
+    position: relative;
+}
+
+
+/* .test-card.even{
+} */ 
+
+.test-card.even:hover {
+  transform: rotate(2deg);
+}
+
+/* Odd index: tilt right on hover */
+.test-card.odd:hover {
+  transform: rotate(-2deg);
+}
+
+.test-top{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.test-bottom{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 16px;
+}
+
+.gradient{
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    width: 100%;
+    height: 150px;
+    border-radius: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .test-gradient {
-    width: 100%;
-    height: 140px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    width: 290px;
+    height: 170px;
     border-radius: 28px;
-  background: #F94F39;
-  background: linear-gradient(
-    to right,
-    #b23929,#792317
-  );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    text-transform: uppercase;
+    color: #ffffff86;
+    background: linear-gradient(to right, #3F5EFB, #FC466B);
+    position: absolute;
+    
+    /* Gradient spread effect */
+    box-shadow: 
+        0 0 60px 15px rgba(63, 94, 251, 0.3),  /* Blue edge glow */
+        0 0 60px 15px rgba(252, 70, 107, 0.3);  /* Pink edge glow */
+    
+    /* Optional: Inner glow for more depth */
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 28px;
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+    }
+}
+
+.test-title{
+    color: rgba(255, 255, 255, 0.8);;
+    font-size: 20px;
+    padding: 0 18px;
+    text-transform: lowercase;
+    font-weight: 300;
+}
+
+.test-date, .test-shift{
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    font-weight: 300;
 }

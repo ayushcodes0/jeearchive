@@ -4,7 +4,7 @@
     align-items: start;
     justify-content: center;
     padding: 20px;
-    background-color: #181824;
+    background-color: #141515ea;
     color: #FAFAFC;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
@@ -12,6 +12,7 @@
     font-family: "Satoshi";
     font-weight: 300;
     font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 50px 30px, rgba(0, 0, 0, 0.06) 0px 12px 24px 4px;
 }
 .user-popup-component p{
     padding: 5px 0;

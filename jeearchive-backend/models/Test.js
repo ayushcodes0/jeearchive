@@ -36,17 +36,19 @@ const testSchema = new mongoose.Schema({
     default: true
   },
   date: {
-    type: Date,
+    type: String,
     required: true
   },
   shift: {
     type: String,
-    enum: ['Shift 1', 'Shift 2'],
     required: true
   },
   instructions: {
     type: String,
     default: 'Follow JEE Mains exam pattern. Attempt only 5 out of 10 questions in Section B.'
+  },
+  type: {
+    type: String
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
