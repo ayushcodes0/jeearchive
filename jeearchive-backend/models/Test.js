@@ -23,12 +23,10 @@ const testSchema = new mongoose.Schema({
   },
   duration: {
     type: Number,
-    required: true,
     default: 180 // minutes
   },
   totalMarks: {
     type: Number,
-    required: true,
     default: 300
   },
   negativeMarking: {

@@ -11,3 +11,74 @@
     justify-content: center;
     align-items: center;
 }
+
+.test-page{
+    position: relative;
+}
+
+.create-test{
+    position: absolute;
+    background-color: #191919;
+    border: 1px solid #202020;
+    top: -60px;
+    right: -180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 28px;
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.3);
+    /* position: relative; */
+}
+
+.plus-icon{
+    font-size: 18px;
+}
+
+.hover-text{
+    position: absolute;
+    width: 90px;
+    background-color: #141515e9;
+    top: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 300;
+    display: none;
+    color: rgba(255, 255, 255, 0.5);;
+}
+
+.create-test:hover{
+    cursor: pointer;
+    transition: all ease .3s;
+    background-color: #212121;
+    border: 1px solid #242424;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.create-test:hover .hover-text{
+    transition: all ease .3s;
+    display: block;
+}
+
+.create-test-popup {
+  position: fixed;                         /* cover the whole screen */
+  top: 0;
+  left: 0;
+  width: 100vw;                            /* full viewport width */
+  height: 100vh;                           /* full viewport height */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(25, 25, 25, 0.6); /* darker translucent background */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  z-index: 999;                            /* make sure it appears above */
+}

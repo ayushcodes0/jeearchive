@@ -51,7 +51,7 @@ const Dashboard = () => {
           <NavLink to={'/question'} className={`questions menu ${linkClass}`}><BsQuestionSquare className='question-icon' />Question</NavLink>
         </div>
         <div className="dashboard-left-bottom">
-          <p className="admin-logout" onClick={handleLogout}><IoIosLogOut className='logout-icon' /></p>
+          <p className="admin-logout" onClick={handleLogout}><IoIosLogOut className='logout-icon' /><div className="logout-hover">Log Out</div></p>
           <p className="admin-profile" onClick={() => setUserPopup(!userPopup)}>
             <img src={user?.avatar || placeholderProfileImage} alt="Admin" />
           </p>

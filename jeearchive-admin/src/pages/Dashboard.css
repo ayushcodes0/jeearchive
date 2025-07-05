@@ -62,7 +62,7 @@
 }
 
 .admin-logout{
-    color: #FAFAFC;
+    color: rgba(255, 255, 255, 0.3);
     font-weight: 300;
     background-color: #191919;
     border: 1px solid #202020;
@@ -71,6 +71,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.logout-hover{
+    position: absolute;
+    width: 90px;
+    background-color: #141515e9;
+    top: 5px;
+    left: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px 8px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 300;
+    display: none;
+    color: rgba(255, 255, 255, 0.5);;
 }
 
 .admin-logout:hover{
@@ -78,6 +97,11 @@
     transition: all ease .3s;
     background-color: #212121;
     border: 1px solid #242424;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-logout:hover .logout-hover{
+    display: block;
 }
 
 .logout-icon{
