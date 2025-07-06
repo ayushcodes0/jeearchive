@@ -54,7 +54,7 @@ const Test = () => {
         </div>
         {createTestPopup && (
           <div className="create-test-popup" ref={popupRef}>
-            <CreateTestPopup onClose={()=>setCreateTestPopup(false)} />
+            <CreateTestPopup onClose={()=>setCreateTestPopup(false)} message="Create Test" />
           </div>
         )}
       </div>

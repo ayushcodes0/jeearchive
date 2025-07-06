@@ -46,7 +46,7 @@ const TestCard = ({ test, idx }) => {
         <TbMenu className='dots-icon' onClick={()=>setShowCardOptionPopup(true)}/>
         {
             showCardOptionPopup && (<div className='options-popup' ref={popupRef}>
-                <CardOptionPopup testId={test._id} />
+                <CardOptionPopup testId={test._id} testData={test} />
             </div>)
         }
       <div className="test-top">

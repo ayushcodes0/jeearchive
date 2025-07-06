@@ -7,10 +7,12 @@ import { toast } from 'react-hot-toast';
 import api from '../services/api';
 import useTest from '../hooks/useTest';
 import ConfirmModal from './ConfirmModal'; 
+import CreateTestPopup from './CreateTestPopup';
 
-const CardOptionPopup = ({ testId }) => {
+const CardOptionPopup = ({ testId, testData}) => {
   const { fetchTests } = useTest();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editTestPopup, setEditTestPopup] = useState(false);
 
   // ----- DELETE HANDLER ----- 
   const handleDelete = async () => {
@@ -35,7 +37,7 @@ const CardOptionPopup = ({ testId }) => {
           <span>Upload</span>
         </p>
 
-        <p>
+        <p onClick={()=> setEditTestPopup(true)}>
           <AiFillEdit className="options" />
           <span>Edit</span>
         </p>
@@ -53,6 +55,12 @@ const CardOptionPopup = ({ testId }) => {
         onCancel={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
       />
+
+      {editTestPopup && (
+          <div className="create-test-popup">
+            <CreateTestPopup onClose={()=>setEditTestPopup(false)} message="Edit Test" testData={testData} />
+          </div>
+        )}
     </>
   );
 };
