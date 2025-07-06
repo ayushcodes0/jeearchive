@@ -7,6 +7,7 @@ import AuthSuccess from '../pages/AuthSuccess';
 import User from '../pages/User';
 import Test from '../pages/Test';
 import Question from '../pages/Question';
+import UploadTestQuestions from '../pages/UploadTestQuestions';
 
 
 const AdminRoute = () => {
@@ -20,6 +21,7 @@ const AdminRoute = () => {
               <Route path="user"         element={<User />} />
               <Route path="test"         element={<Test />} />
               <Route path="question"    element={<Question />} />
+              <Route path='upload-test-questions' element={<UploadTestQuestions/>}/>
             
             </Route>
         </Routes>

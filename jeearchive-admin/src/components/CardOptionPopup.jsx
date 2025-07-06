@@ -8,11 +8,13 @@ import api from '../services/api';
 import useTest from '../hooks/useTest';
 import ConfirmModal from './ConfirmModal'; 
 import CreateTestPopup from './CreateTestPopup';
+import { NavLink } from 'react-router-dom';
 
 const CardOptionPopup = ({ testId, testData}) => {
   const { fetchTests } = useTest();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [editTestPopup, setEditTestPopup] = useState(false);
+
 
   // ----- DELETE HANDLER ----- 
   const handleDelete = async () => {
@@ -32,10 +34,10 @@ const CardOptionPopup = ({ testId, testData}) => {
   return (
     <>
       <div className="card-option-popup">
-        <p>
+        <NavLink to={"/upload-test-questions"} state={{ testId }} style={{ textDecoration: 'none', color: 'inherit' }} ><p>
           <MdUpload className="options" />
           <span>Upload</span>
-        </p>
+        </p></NavLink>
 
         <p onClick={()=> setEditTestPopup(true)}>
           <AiFillEdit className="options" />

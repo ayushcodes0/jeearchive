@@ -23,6 +23,7 @@
     align-items: center;
 }
 
+
 .card-option-popup p:hover{
     cursor: pointer;
     transition: all ease .3s;
