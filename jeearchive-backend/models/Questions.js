@@ -33,7 +33,7 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  imageUrl: {
+  questionImage: {
     type: String, // will store the image on cloudinary and the link to that here.
     default: null
   },

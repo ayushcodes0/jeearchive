@@ -34,7 +34,7 @@ const CardOptionPopup = ({ testId, testData}) => {
   return (
     <>
       <div className="card-option-popup">
-        <NavLink to={"/upload-test-questions"} state={{ testId }} style={{ textDecoration: 'none', color: 'inherit' }} ><p>
+        <NavLink to={"/upload-test-questions"} state={{ testId, testData }} style={{ textDecoration: 'none', color: 'inherit' }} ><p>
           <MdUpload className="options" />
           <span>Upload</span>
         </p></NavLink>

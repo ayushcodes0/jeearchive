@@ -6,7 +6,7 @@ import './UploadTestQuestions.css';
 
 const UploadTestQuestions = () => {
   const { state } = useLocation();
-  const testId = state?.testId;
+  const { testId } = state;
   const [rawJson, setRawJson] = useState('');
 
 
@@ -32,6 +32,44 @@ const UploadTestQuestions = () => {
         ...q,
         test: testId,                 // <— key change
       }));
+    }
+
+    if (testId) {
+      // pull details from state.testData (type, date, shift)
+      const { type: type, date, shift } = state?.testData || {};
+      const slugify = str =>
+        String(str || '')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+
+      // base, e.g. "jee-mains-2025-22-jan-2025-shift-2"
+      const base = [type, date, `${shift}`]
+        .filter(Boolean)
+        .map(slugify)
+        .join('-');
+
+      payload.questions = payload.questions.map((q, qIdx) => {
+        const questionIndex = qIdx + 1; // 1‑based
+        // prefill option images if options exist
+        const options =
+          Array.isArray(q.options) &&
+          q.options.map((opt, optIdx) => ({
+            ...opt,
+            optionImage:
+              opt.optionImage ||
+              `${base}-question-${questionIndex}-option-${optIdx + 1}-image.png`,
+          }));
+
+        return {
+          ...q,
+          test: testId,
+          questionImage:
+            q.questionImage ||
+            `${base}-question-${questionIndex}-image.png`,
+          ...(options ? { options } : {}),
+        };
+      });
     }
 
     try {
