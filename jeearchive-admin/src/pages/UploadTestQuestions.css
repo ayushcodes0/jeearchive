@@ -1,0 +1,58 @@
+.upload-test-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.upload-heading{
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.upload-test-container textarea{
+    border: none;
+    outline: none;
+    width: 700px;
+    height: 100%;
+    background-color: #191919;
+    padding: 20px;
+    resize: none;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.upload-test-container button{
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    outline: none;
+    border: none;
+    border-radius: 12px;
+    width: 120px;
+    cursor: pointer;
+}
+
+.copy-icon{
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+}
+
+.test-id-row{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: #191919;
+}
+
+.test-id{
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+}
+
+@media (max-width: 795px) {
+    .upload-test-container textarea{
+        width: 88vw;
+    }
+}
