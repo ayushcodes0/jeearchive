@@ -1,7 +1,16 @@
 .test-card-container{
+    /* width: 700px; */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
+    padding-bottom: 80px;
+}
+
+@media (max-width: 752px) {
+    .test-card-container{
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 .loading{
@@ -17,11 +26,11 @@
 }
 
 .create-test{
-    position: absolute;
+    position: fixed;
     background-color: #191919;
     border: 1px solid #202020;
-    top: -60px;
-    right: -180px;
+    top: 25px;
+    right: 40px;
     display: flex;
     justify-content: center;
     align-items: center;

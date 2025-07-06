@@ -1,5 +1,9 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "./TestCard.css"
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { TbMenu } from "react-icons/tb";
+import CardOptionPopup from './CardOptionPopup';
+
 
 const TestCard = ({ test, idx }) => {
   // Define gradient colors based on index
@@ -18,9 +22,33 @@ const TestCard = ({ test, idx }) => {
 
   const tiltClass = idx % 2 === 0 ? "even" : "odd";
 
+  const [showCardOptionPopup, setShowCardOptionPopup] = useState(false);
+
+  const popupRef = useRef(null);
+
+  /* 3️⃣ close the popup when the user clicks anywhere outside it */
+  useEffect(() => {
+    if (!showCardOptionPopup) return;                        // run only when open
+
+    const handleClickOutside = (e) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setShowCardOptionPopup(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showCardOptionPopup]);
+
 
   return (
     <div className={`test-card ${tiltClass}`}>
+        <TbMenu className='dots-icon' onClick={()=>setShowCardOptionPopup(true)}/>
+        {
+            showCardOptionPopup && (<div className='options-popup' ref={popupRef}>
+                <CardOptionPopup testId={test._id} />
+            </div>)
+        }
       <div className="test-top">
         <div className="gradient">
           <div 

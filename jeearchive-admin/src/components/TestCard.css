@@ -1,10 +1,9 @@
 .test-card{
-    /* width: 280px; */
+    width: 300px;
     height: 380px;
     background-color: #1415157f;
     border-radius: 40px;
     border: 1px solid rgba(255, 255, 255, 0.02);
-    width: 100%;
     transform: none;
     opacity: 1;
     border-radius: 40px;
@@ -22,14 +21,14 @@
 /* .test-card.even{
 } */ 
 
-.test-card.even:hover {
+/* .test-card.even:hover {
   transform: rotate(2deg);
-}
+} */
 
 /* Odd index: tilt right on hover */
-.test-card.odd:hover {
+/* .test-card.odd:hover {
   transform: rotate(-2deg);
-}
+} */
 
 .test-top{
     display: flex;
@@ -99,4 +98,22 @@
     color: rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
     font-weight: 300;
+}
+
+.dots-icon{
+    position: absolute;
+    top: 8px;
+    right: 140px;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+.dots-icon:hover{
+    color: rgba(255, 255, 255, 0.8);
+    transition: all ease .3s;
+}
+
+.options-popup{
+    position: absolute;
+    top: 10px;
+    left: 170px;
 }
