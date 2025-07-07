@@ -1,0 +1,36 @@
+.profile-image-popup{
+    color: white;
+    background-color: #191919;
+    padding: 20px 15px;
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    border-top-left-radius: 0px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px ;
+}
+
+.profile-image-popup p{
+    font-weight: 300;
+    padding: 5px 5px;
+    border-bottom: 1px solid #212121;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+}
+
+.profile-image-popup p:hover{
+    cursor: pointer;
+    transition: all ease .3s;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.profile-image-popup p{
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.profile-image-popup p:hover{
+    color: rgba(255, 255, 255, 0.8);
+    transition: all ease .3;
+}

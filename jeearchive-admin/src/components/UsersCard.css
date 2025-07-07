@@ -1,0 +1,65 @@
+.user-card{
+    display: grid;
+    grid-template-columns: .5fr 2fr 3fr 1fr 1.2fr;
+    gap: 40px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #202020;
+    align-items: center;
+    font-weight: 300;
+    position: relative;
+}
+
+.user-card p{
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.user-card .profile-image{
+    background-color: #242424;
+    height: 34px;
+    width: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all ease .3s;
+}
+
+.profile-image img{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+.user-card .admin, .user-card .user{
+    padding: 2px 10px;
+    border-radius: 50px;
+    text-align: center;
+    cursor: pointer;
+    transition: all ease .3s;
+}
+
+.admin{
+    /* background-color: #448dbd; */
+    background: linear-gradient(to right, #f46b45, #eea849);
+}
+
+.user{
+    /* background-color: #479f6d */
+    background: linear-gradient(to right, #086b48, #77d99b);
+}
+
+.user-card .google, .user-card .local{
+    padding: 2px 10px;
+    border-radius: 50px;
+    background-color: #232323;
+    text-align: center;
+}
+
+.google{
+    background: linear-gradient(to right, rgb(20, 80, 117), rgb(117, 175, 219));
+}
+
+.profile-popup{
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    z-index: 99;
+}
