@@ -11,7 +11,7 @@ const UserProvider = ({ children }) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/user');  // endpoint: /api/user/
+      const res = await api.get('/user');
       setUsers(res.data.users || []);
     } catch (err) {
       console.error('Error fetching tests:', err.message);
