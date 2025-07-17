@@ -1,9 +1,56 @@
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi-Light.woff2') format('woff2'),
+       url('../assets/fonts/Satoshi-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi-Regular.woff2') format('woff2'),
+       url('../assets/fonts/Satoshi-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi-Medium.woff2') format('woff2'),
+       url('../assets/fonts/Satoshi-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi-Bold.woff2') format('woff2'),
+       url('../assets/fonts/Satoshi-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('../assets/fonts/Satoshi-Black.woff2') format('woff2'),
+       url('../assets/fonts/Satoshi-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 :root {
   
   --primary-background-color: #0E1011;
   --primary-orange-color:  #F94F39;
-  --primary-text-color: #FAFAFC;;
+  --primary-text-color: #FAFAFC;
 
-  /* Font Settings */
-  --font-main: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  /* Fonts */
+  --font-main: 'Satoshi', sans-serif;
 }

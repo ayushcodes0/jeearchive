@@ -1,9 +1,7 @@
 body {
   margin: 0;
-  /* font-family: var(--font-main); */
-  /* background-color: var(--color-bg); */
-  /* color: var(--color-text); */
   background-color: black;
+  font-family: var(--font-main);
 }
 a {
   /* color: var(--color-primary); */
