@@ -4,7 +4,6 @@ body {
   font-family: var(--font-main);
 }
 a {
-  /* color: var(--color-primary); */
   text-decoration: none;
 }
 a.active {
