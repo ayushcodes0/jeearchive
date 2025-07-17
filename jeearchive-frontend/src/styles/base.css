@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  /* font-family: var(--font-main); */
+  /* background-color: var(--color-bg); */
+  /* color: var(--color-text); */
+  background-color: black;
+}
+a {
+  /* color: var(--color-primary); */
+  text-decoration: none;
+}
+a.active {
+  font-weight: bold;
+}

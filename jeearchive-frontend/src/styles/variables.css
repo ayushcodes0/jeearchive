@@ -1,0 +1,9 @@
+:root {
+  
+  --primary-background-color: #0E1011;
+  --primary-orange-color:  #F94F39;
+  --primary-text-color: #FAFAFC;;
+
+  /* Font Settings */
+  --font-main: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+}

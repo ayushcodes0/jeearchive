@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import DashboardLayout from './layouts/DashboardLayout';
-import Pyq from './pages/Pyq';
-import Coaching from './pages/Coaching';
-import Analytics from './pages/Analytics';
+import Login from './pages/Login/Login';
+import DashboardLayout from './layouts/DashboardLayout/DashboardLayout';
+import Pyq from './pages/Pyq/Pyq';
+import Coaching from './pages/Coaching/Coaching';
+import Analytics from './pages/Analytics/Analytics';
 
 function App() {
   return (

@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
+import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
   return (
-    <div style={{ width: '200px', background: '#eee', padding: '1rem' }}>
+    <div className={styles.sidebarContainer}>
       <h3>Menu</h3>
       <ul>
         <li><NavLink to="pyq">PYQ</NavLink></li>
